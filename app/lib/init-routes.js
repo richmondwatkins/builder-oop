@@ -19,20 +19,20 @@ function load(app, fn){
   var users = traceur.require(__dirname + '/../routes/users.js');
   var trees = traceur.require(__dirname + '/../routes/trees.js');
 
-
-
   app.get('/', dbg, game.index);
   app.get('/help', dbg, home.help);
 
   app.get('/game', dbg, game.index);
-  app.post('/login', dbg, users.login); //route specifically for user stuff like logging in etc.
+
+  app.post('/login', dbg, users.login);
+  app.get('/dashboard/:userId', dbg, users.dashboard);
+  app.post('/sell/:userId', dbg, users.sell);
 
   app.post('/trees/plant', dbg, trees.plant);
   app.get('/trees', dbg, trees.forest);
   app.put('/trees/:treeId/grow', dbg, trees.grow);
-
   app.put('/trees/:treeId/chop', dbg, trees.chop);
-  app.put('/update/:userId/wood', dbg, users.update);
+  // app.put('/trees/:treeId/dashboard', dbg, users.updateDashboard);
 
   console.log('Routes Loaded');
   fn();

@@ -1,5 +1,10 @@
-#user(data-id=user._id.toString())= user.username
-#wood= user.wood
-#cash= user.cash
 button#plant Plant
-button#getforest Get Forest
+button#getForest Get Forest
+#user(data-id=user._id.toString())= user.username
+.wood Wood:
+  #wood= user.wood
+.cash Cash:
+  #cash #{user.cash}
+form
+  input.woodqty(type='text', name='wood', placeholder='Quanity')
+  button#sell Sell

@@ -1,69 +1,76 @@
-/*jshint unused: false */
+/* jshint unused:false */
+
 (function(){
   'use strict';
 
   $(document).ready(init);
 
-  function init() {
-  $('#login').click(login);
-  $('#dashboard').on('click', '#plant', plant);
-  $('#dashboard').on('click', '#getforest', forest);
-  $('#forest').on('click', '.grow', grow);
-  $('#forest').on('click', '.chop', chop);
+  function init(){
+    $('#login').click(login);
+    $('#dashboard').on('click', '#plant', plant);
+    $('#dashboard').on('click', '#getForest', forest);
+    $('#forest').on('click', '.grow', grow);
+    $('#forest').on('click', '.chop', chop);
+    $('#dashboard').on('click', '#sell', sell);
+  }
+
+  function sell(event){
+    var userId = $('#user').attr('data-id');
+    var data = $(this).closest('form').serialize();
+    
+    ajax(`/sell/${userId}`, 'POST', data, h=>{
+
+      $('#dashboard').empty().append(h);
+    });
+
+    event.preventDefault();
   }
 
   function chop(){
     var tree = $(this).closest('.tree');
     var treeId = tree.attr('data-id');
     var userId = $('#user').attr('data-id');
-    ajax(`/trees/${treeId}/${userId}`, 'PUT', null, h=>{
-      tree.replaceWith(h);
-      // ajax(`/update/${userId}/wood`, 'PUT', null z=>{
-      //   userId.
-      // });
 
+    ajax(`/trees/${treeId}/chop`, 'PUT', null, ht=>{
+      ajax(`/dashboard/${userId}`, 'GET', null, hu=>{
+        tree.replaceWith(ht);
+        $('#dashboard').empty().append(hu);
+      });
     });
   }
 
   function grow(){
     var tree = $(this).closest('.tree');
     var treeId = tree.attr('data-id');
-    ajax(`/trees/${treeId}/grow`, 'PUT', null, h=>{
-      tree.replaceWith(h);
-
+    ajax(`/trees/${treeId}/grow`, 'PUT', null, html=>{
+      tree.replaceWith(html);
     });
   }
 
   function forest(){
     var userId = $('#user').attr('data-id');
-    ajax(`/trees?userId=${userId}`, 'GET', null, h=> {
-      $('#forest').empty().append(h);
+    ajax(`/trees?userId=${userId}`, 'GET', null, html=>{
+      $('#forest').empty().append(html);
+    }); //trying to be explicit about query. GET defaults to query string.
+  }
+
+  function plant(){
+    var userId = $('#user').attr('data-id');
+    ajax('/trees/plant', 'POST', {userId:userId}, html=>{
+      $('#forest').append(html);
     });
   }
-
-  function plant() {
-    var userId = $('#user').attr('data-id');
-    ajax('/trees/plant', 'POST', {userId:userId}, h =>{
-      $('#forest').append(h);
-    }); //urls should always be plural in this case..trees
-  }
-
 
   function login(){
     var username = $('#username').val();
-
-
-    ajax('/login', 'POST', {username:username}, h =>{
-      $('#dashboard').empty().append(h);
-
+    ajax('/login', 'POST', {username:username}, html=>{
+      $('#dashboard').empty().append(html);
     });
   }
 
-
-  function ajax(url, type,  data={}, success=r=>console.log(r), dataType='html'){  //defualted values in this case dataType go at the end
-
-    $.ajax({url:url, type:type, dataType:dataType, data:data, success:success});  //type is the verb GET POST etc.
+  //creating a function for all ajax calls
+  function ajax(url, verb, data={}, success=r=>console.log(r), dataType='html'){//defaulting to html
+    $.ajax({url:url, type:verb, dataType:dataType, data:data, success:success});
   }
-
 
 })();
